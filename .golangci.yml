@@ -1,0 +1,17 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - gocritic
+    - gocognit
+    - gocyclo
+    - maintidx
+    - dupl
+    - mnd
+    - unparam
+    - ireturn
+    - goconst
+    - errcheck

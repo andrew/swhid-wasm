@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Package SWHID calculator</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+<main>
+  <header class="masthead"><h1>Package SWHID calculator</h1></header>
+  <form id="package-form" aria-label="Package or archive; drop an archive here">
+    <label><span class="sr-only">Ecosystem</span><select id="ecosystem"><option value="npm">npm</option><option value="pypi">PyPI (source)</option><option value="cargo">Cargo</option><option value="gem">RubyGems</option><option value="pub">Dart</option></select></label>
+    <label class="package-field"><span class="sr-only">Package</span><input id="package" required value="is-number" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off"><button id="clear-archive" type="button" hidden aria-label="Clear selected archive">×</button></label>
+    <label><span class="sr-only">Version</span><input id="version" spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="Version" autocomplete="off" title="Leave blank to use the default registry’s latest release"></label>
+    <button id="load" type="submit">Load</button>
+    <button id="choose-archive" type="button">Upload</button>
+    <input id="archive" type="file" accept=".tar,.tgz,.gz,.zip,.whl,.crate,.gem" hidden>
+    <button id="settings" type="button" aria-label="Settings" aria-expanded="false" aria-controls="options">⚙</button>
+  </form>
+  <section id="options" hidden>
+    <label class="check"><input id="auto-check" type="checkbox" checked>Check Software Heritage after hashing</label>
+    <p>Package contents stay local; preservation checks send identifiers only.</p>
+    <label class="check"><input id="strip" type="checkbox">Remove one wrapper directory from local archives</label>
+    <p>Local formats: TAR, TAR.GZ, ZIP, .crate and .gem. A blank version uses the default registry’s latest release.</p>
+    <p>npm, PyPI and Cargo remove one wrapper directory. Dart retains its archive root. RubyGems uses the inner data.tar.gz root.</p>
+    <label>Fetch proxy URL template<input id="proxy" value="/api/registry/fetch?url={url}" placeholder="https://your-proxy.example/?url={url}"></label>
+    <p>The local proxy fetches public registry metadata and archives only when direct browser access fails. {url} is replaced with the encoded URL. Clear this field to disable it. Uploaded files never use the proxy.</p>
+  </section>
+  <section id="results" hidden>
+    <p id="status" role="status" aria-live="polite" hidden></p>
+    <div id="result-content" hidden>
+    <header class="result-header"><h2 id="title"></h2><p id="metadata"></p></header>
+    <div class="root-row"><div id="coverage"></div><div class="package-stats"><span id="object-counts"></span><span aria-hidden="true"> · </span><span id="sizes"></span></div>
+    <section id="preservation" aria-label="Software Heritage coverage">
+      <button id="known-label" type="button" class="tooltip-label" popovertarget="known-info" aria-label="Software Heritage coverage">tree</button>
+      <div id="known-info" popover>Only SWHIDs are sent through the local relay to Software Heritage, in batches of up to 500. Content and directory coverage count distinct objects. The package root is checked separately.<p id="known-status" role="status" aria-live="polite"></p><div id="known-detail"></div></div>
+      <div id="known-coverage"></div>
+      <button id="check-known" type="button" aria-label="Check Software Heritage" aria-describedby="known-status">↻</button>
+    </section></div>
+    <section id="save-actions" aria-label="Save Code Now" hidden>
+      <div class="save-archive-actions"><button id="save-archive" type="button">Archive published package</button><button id="save-refresh" type="button" hidden>Check save status</button><a id="save-request" target="_blank" rel="noopener noreferrer" hidden>View request</a><a href="https://archive.softwareheritage.org/save/" target="_blank" rel="noopener noreferrer">Save Code Now</a></div>
+      <p id="save-status" role="status" aria-live="polite"></p>
+      <p id="save-archive-note">Only the public archive URL is submitted. Software Heritage downloads it separately; extraction may produce a different root SWHID.</p>
+      <div id="save-repository" hidden>
+      <a href="https://archive.softwareheritage.org/save/" target="_blank" rel="noopener noreferrer">Archive repository with Software Heritage</a>
+      <a id="save-repository-url" target="_blank" rel="noopener noreferrer"></a>
+      <span>Paste the repository URL into Save Code Now. Archives the source repository. Published package contents may differ.</span>
+    </div>
+    </section>
+    <div class="timing-row"><div class="timing-caption"><button id="timing-toggle" type="button" class="tooltip-label" aria-expanded="false" aria-controls="timing-legend">Timings</button><strong id="timings-heading"></strong></div><div id="timing-bar"><span id="phase-tooltip" role="tooltip" hidden></span></div></div>
+    <div id="timing-legend" hidden><div id="stats"></div><p id="timing-info">Registry metadata includes resolver download and startup. Overall time includes registry metadata, archive download or local file reading, engine download and startup, SWHID generation, worker overhead and display construction, before browser paint. SWHID generation includes archive extraction, content and directory hashing, and WASM input/output. SWH lookups run afterward and are shown separately, including failed attempts. Network phases are blue; local phases are teal.</p>
+    </div>
+    <div class="disclosure-tabs" role="group" aria-label="Package details">
+      <button id="project-summary" type="button" data-panel="project-panel" aria-controls="project-panel" aria-expanded="false">Project</button>
+      <button type="button" data-panel="wrapper-panel" aria-controls="wrapper-panel" aria-expanded="false">Archive root and wrapper</button>
+      <button type="button" data-panel="modes-panel" aria-controls="modes-panel" aria-expanded="false">File modes</button>
+      <button id="duplicate-summary" type="button" data-panel="duplicates-panel" aria-controls="duplicates-panel" aria-expanded="false">Duplicate contents</button>
+    </div>
+    <section id="project-panel" class="detail-panel" aria-label="Project metadata" hidden></section>
+    <div id="wrapper-panel" class="detail-panel" hidden><p id="root-choice"></p></div>
+    <div class="inspections">
+      <section id="modes-panel" class="detail-panel" hidden>
+        <dl id="mode-counts"></dl>
+        <p>Directory SWHIDs include executable bits and symlink modes. A file's content SWHID covers only its bytes; a symlink's content is its target path, not the target file.</p>
+        <p>TAR stores modes directly. ZIP needs Unix mode metadata in its external attributes. Some Windows-built wheels and source distributions omit it; this app rejects those archives rather than guessing. Other extraction tools can assign different modes and produce different directory SWHIDs.</p>
+      </section>
+      <section id="duplicates-panel" class="detail-panel" hidden>
+        <p>Paths with the same content SWHID contain identical bytes. The repeated-path count excludes the first path in each group. Executable modes can differ; symlinks compare their target bytes.</p>
+        <p id="duplicate-counts"></p><div id="duplicate-groups"></div>
+      </section>
+    </div>
+    <section class="file-table" aria-label="Package files">
+      <div class="file-table-header">
+        <div class="file-table-tools"><span>Name</span><input id="tree-filter" type="search" aria-label="Filter file paths" placeholder="Filter paths…" autocomplete="off" spellcheck="false" hidden><label id="unknown-filter-label" hidden><input id="unknown-filter" type="checkbox" disabled>Show unknown only</label></div>
+        <span class="status-heading">SWH</span><span class="size-heading">Size</span>
+      </div>
+      <div id="tree"></div>
+      <p id="tree-empty" role="status" hidden>No matching paths.</p>
+    </section>
+    </div>
+  </section>
+</main>
+</body>
+</html>

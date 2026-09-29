@@ -1,0 +1,72 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions: {}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '26'
+          package-manager-cache: false
+      - name: Install lint tools
+        run: |
+          go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.14.0
+          go install golang.org/x/tools/cmd/deadcode@v0.49.0
+          go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+      - name: Check Go formatting
+        run: |
+          unformatted=$(gofmt -l analyzer cmd resolution server)
+          if [ -n "$unformatted" ]; then
+            printf '%s\n' "$unformatted"
+            exit 1
+          fi
+      - name: Lint native Go
+        run: golangci-lint run ./...
+      - name: Lint WASM Go
+        env:
+          GOOS: js
+          GOARCH: wasm
+        run: golangci-lint run ./cmd/wasm ./cmd/resolver
+      - name: Check native dead code
+        run: |
+          findings=$(deadcode ./cmd/native ./cmd/server)
+          if [ -n "$findings" ]; then
+            printf '%s\n' "$findings"
+            exit 1
+          fi
+      - name: Check resolver dead code
+        env:
+          GOOS: js
+          GOARCH: wasm
+        run: |
+          findings=$(deadcode ./cmd/resolver)
+          if [ -n "$findings" ]; then
+            printf '%s\n' "$findings"
+            exit 1
+          fi
+      - name: Check JavaScript syntax
+        run: |
+          for file in web/*.mjs scripts/*.mjs; do
+            node --check "$file"
+          done
+      - name: Check shell syntax
+        run: bash -n scripts/build.sh
+      - name: Lint workflows
+        run: actionlint
