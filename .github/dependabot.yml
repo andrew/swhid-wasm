@@ -8,10 +8,7 @@ updates:
       default-days: 7
     open-pull-requests-limit: 5
   - package-ecosystem: gomod
-    directories:
-      - /
-      - /deps/archives
-      - /deps/swhid-go
+    directory: /
     schedule:
       interval: weekly
     cooldown:

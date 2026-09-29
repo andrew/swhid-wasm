@@ -42,7 +42,7 @@ Tests also require Node 26 or later, Chrome or Chromium, `tar` and `zip`. Set `C
 make test
 ```
 
-`make test` builds the app and runs the Go, dependency and JavaScript tests. Tests compare native and WASM archive hashes, then upload a generated archive through headless Chrome and check the displayed root against an independently calculated Git tree hash. The default suite makes no registry or Software Heritage requests; use the following command to test npm resolution and a preservation lookup over the network:
+`make test` builds the app and runs the Go and JavaScript tests. Tests compare native and WASM archive hashes, then upload a generated archive through headless Chrome and check the displayed root against an independently calculated Git tree hash. The default suite makes no registry or Software Heritage requests; use the following command to test npm resolution and a preservation lookup over the network:
 
 ```sh
 LIVE_REGISTRY=1 node --test scripts/ui.test.mjs
@@ -50,4 +50,4 @@ LIVE_REGISTRY=1 node --test scripts/ui.test.mjs
 
 ## License
 
-The project uses the [MIT license](LICENSE), and the archive and SWHID sources in `deps/` retain their original licenses. Their revision records identify the bases of the local streaming and hashing changes. Building the WASM assets also copies Go's runtime license to `build/GO-LICENSE`.
+The project uses the [MIT license](LICENSE); dependencies retain their upstream licenses. Building the WASM assets also copies Go's runtime license to `build/GO-LICENSE`.

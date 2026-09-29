@@ -8,6 +8,4 @@ serve: build
 
 test: build
 	go test -race ./...
-	cd deps/archives && go test ./...
-	cd deps/swhid-go && go test ./objects
 	node --test scripts/*.test.mjs
