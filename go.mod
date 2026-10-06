@@ -6,7 +6,7 @@ require (
 	github.com/andrew/swhid-go v0.1.0
 	github.com/git-pkgs/archives v0.8.1-0.20260929065233-13807f84620c
 	github.com/git-pkgs/purl v0.1.20
-	github.com/git-pkgs/registries v0.9.3-0.20260926201929-a5ff48a89270
+	github.com/git-pkgs/registries v0.9.3
 )
 
 require (
