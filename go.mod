@@ -5,7 +5,7 @@ go 1.27.3
 require (
 	github.com/andrew/swhid-go v0.1.1
 	github.com/git-pkgs/archives v0.9.0
-	github.com/git-pkgs/purl v0.1.21
+	github.com/git-pkgs/purl v0.1.22
 	github.com/git-pkgs/registries v0.11.0
 )
 
