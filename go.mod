@@ -1,6 +1,6 @@
 module github.com/andrew/swhid-wasm
 
-go 1.27.1
+go 1.27.3
 
 require (
 	github.com/andrew/swhid-go v0.1.1
