@@ -6,7 +6,7 @@ require (
 	github.com/andrew/swhid-go v0.1.1
 	github.com/git-pkgs/archives v0.11.0
 	github.com/git-pkgs/purl v0.2.1
-	github.com/git-pkgs/registries v0.13.0
+	github.com/git-pkgs/registries v0.13.2
 )
 
 require (
@@ -20,5 +20,5 @@ require (
 	github.com/pjbgf/sha1cd v0.7.0 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/ulikunitz/xz v0.5.17 // indirect
-	go.yaml.in/yaml/v3 v3.0.5 // indirect
+	go.yaml.in/yaml/v3 v3.0.6 // indirect
 )
