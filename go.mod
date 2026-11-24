@@ -6,15 +6,15 @@ require (
 	github.com/andrew/swhid-go v0.1.1
 	github.com/git-pkgs/archives v0.11.0
 	github.com/git-pkgs/purl v0.2.1
-	github.com/git-pkgs/registries v0.13.2
+	github.com/git-pkgs/registries v0.14.0
 )
 
 require (
 	github.com/git-pkgs/magic v0.6.0 // indirect
-	github.com/git-pkgs/pom v0.1.8 // indirect
-	github.com/git-pkgs/spdx v0.3.3 // indirect
+	github.com/git-pkgs/pom v0.1.9 // indirect
+	github.com/git-pkgs/spdx v0.3.6 // indirect
 	github.com/git-pkgs/vers v0.7.2 // indirect
-	github.com/github/go-spdx/v2 v2.7.0 // indirect
+	github.com/github/go-spdx/v2 v2.8.0 // indirect
 	github.com/klauspost/compress v1.20.3 // indirect
 	github.com/package-url/packageurl-go v0.1.7 // indirect
 	github.com/pjbgf/sha1cd v0.7.0 // indirect
